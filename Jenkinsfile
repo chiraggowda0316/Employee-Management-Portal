@@ -45,8 +45,8 @@ pipeline {
 
         stage('Run New Container') {
             steps {
-                // Connects directly to your established Task 5 container environment network
-                sh "docker run -d --name employee-app-container --network employee-management-portal_default -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/employee_db?allowPublicKeyRetrieval=true&useSSL=false -e SPRING_DATASOURCE_USERNAME=admin -e SPRING_DATASOURCE_PASSWORD=admin123 ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
+                // Wrapped the URL in double quotes to prevent bash from treating '&' as a background task separator
+                sh "docker run -d --name employee-app-container --network employee-management-portal_default -p 8080:8080 -e SPRING_DATASOURCE_URL=\"jdbc:mysql://mysql:3306/employee_db?allowPublicKeyRetrieval=true&useSSL=false\" -e SPRING_DATASOURCE_USERNAME=admin -e SPRING_DATASOURCE_PASSWORD=admin123 ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
 
