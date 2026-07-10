@@ -1,11 +1,17 @@
 pipeline {
     agent any
     
+    // Injects Global Tool configurations setup in Jenkins UI
+    tools {
+        maven 'Maven'  // Must match the exact name you used under Manage Jenkins -> Tools
+        jdk 'Java 17'  // Must match the exact name you used under Manage Jenkins -> Tools
+    }
+    
     environment {
-        DOCKER_HUB_USER = 'your_dockerhub_username' // Change this to your actual username
+        DOCKER_HUB_USER = 'chiraggowda0316' // Updated based on your repository log
         IMAGE_NAME      = 'employee-management-portal'
         IMAGE_TAG       = "${BUILD_NUMBER}"
-        REGISTRY_CRED   = 'docker-hub-credentials' // Jenkins Credentials ID
+        REGISTRY_CRED   = 'docker-hub-credentials'
     }
 
     stages {
@@ -40,19 +46,10 @@ pipeline {
             }
         }
 
-        stage('Remove Old Container') {
+        stage('Deploy Stack (Docker Compose)') {
             steps {
-                sh '''
-                    docker stop employee-app-container || true
-                    docker rm employee-app-container || true
-                '''
-            }
-        }
-
-        stage('Run New Container') {
-            steps {
-                // Runs the isolated application container (assumes MySQL is already running or managed externally)
-                sh "docker run -d --name employee-app-container -p 8080:8080 ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
+                sh 'docker compose down || true'
+                sh 'docker compose up -d --build'
             }
         }
 
@@ -60,7 +57,7 @@ pipeline {
             steps {
                 retry(5) {
                     sleep 10
-                    sh 'curl --fail http://localhost:8080/actuator/health || curl --fail http://localhost:8080/'
+                    sh 'curl --fail http://localhost:8080/employees || curl --fail http://127.0.0'
                 }
             }
         }
@@ -76,4 +73,3 @@ pipeline {
         }
     }
 }
-
