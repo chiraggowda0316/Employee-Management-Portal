@@ -1,14 +1,8 @@
 pipeline {
     agent any
     
-    // Injects Global Tool configurations setup in Jenkins UI
-    tools {
-        maven 'Maven'  // Must match the exact name you used under Manage Jenkins -> Tools
-        jdk 'Java 17'  // Must match the exact name you used under Manage Jenkins -> Tools
-    }
-    
     environment {
-        DOCKER_HUB_USER = 'chiraggowda0316' // Updated based on your repository log
+        DOCKER_HUB_USER = 'chiraggowda0316'
         IMAGE_NAME      = 'employee-management-portal'
         IMAGE_TAG       = "${BUILD_NUMBER}"
         REGISTRY_CRED   = 'docker-hub-credentials'
