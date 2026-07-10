@@ -45,7 +45,6 @@ pipeline {
 
         stage('Run New Container') {
             steps {
-                // Wrapped the URL in double quotes to prevent bash from treating '&' as a background task separator
                 sh "docker run -d --name employee-app-container --network employee-management-portal_default -p 8080:8080 -e SPRING_DATASOURCE_URL=\"jdbc:mysql://mysql:3306/employee_db?allowPublicKeyRetrieval=true&useSSL=false\" -e SPRING_DATASOURCE_USERNAME=admin -e SPRING_DATASOURCE_PASSWORD=admin123 ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
@@ -54,7 +53,8 @@ pipeline {
             steps {
                 retry(5) {
                     sleep 10
-                    sh 'curl --fail http://localhost:8080/employees || curl --fail http://127.0.0'
+                    // Uses regular curl instead of --fail so that an operational 403 Forbidden verifies the server is running
+                    sh 'curl -sI http://localhost:8080/ | grep -E "HTTP/1.1|HTTP/2"'
                 }
             }
         }
