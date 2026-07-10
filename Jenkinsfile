@@ -9,12 +9,6 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com'
-            }
-        }
-
         stage('Compile') {
             steps {
                 sh 'mvn clean compile'
@@ -51,7 +45,7 @@ pipeline {
 
         stage('Run New Container') {
             steps {
-                // Connects natively to the existing database network created by your manual task 5
+                // Connects directly to your established Task 5 container environment network
                 sh "docker run -d --name employee-app-container --network employee-management-portal_default -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/employee_db?allowPublicKeyRetrieval=true&useSSL=false -e SPRING_DATASOURCE_USERNAME=admin -e SPRING_DATASOURCE_PASSWORD=admin123 ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
