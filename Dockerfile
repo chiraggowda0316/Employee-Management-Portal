@@ -1,15 +1,14 @@
-# Step 1: Use official OpenJDK 17 base image
-FROM openjdk:17-jdk-slim
+# Use the official production-ready Eclipse Temurin OpenJDK 17 image
+FROM eclipse-temurin:17-jdk-alpine
 
-# Step 2: Set working directory inside the container
+# Set working directory inside the container
 WORKDIR /app
 
-# Step 3: Copy the compiled jar from target folder to container
+# Copy the compiled jar from target folder to container
 COPY target/*.jar app.jar
 
-# Step 4: Expose application port 8080
+# Expose application port 8080
 EXPOSE 8080
 
-# Step 5: Command to run the application
+# Command to run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
-
