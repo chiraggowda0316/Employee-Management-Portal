@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/chiraggowda0316/Employee-Management-Portal.git'
+                git branch: 'main', url: 'https://github.com'
             }
         }
 
@@ -40,10 +40,19 @@ pipeline {
             }
         }
 
-        stage('Deploy Stack (Docker Compose)') {
+        stage('Remove Old Container') {
             steps {
-                sh 'docker compose down || true'
-                sh 'docker compose up -d --build'
+                sh '''
+                    docker stop employee-app-container || true
+                    docker rm employee-app-container || true
+                '''
+            }
+        }
+
+        stage('Run New Container') {
+            steps {
+                // Connects natively to the existing database network created by your manual task 5
+                sh "docker run -d --name employee-app-container --network employee-management-portal_default -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/employee_db?allowPublicKeyRetrieval=true&useSSL=false -e SPRING_DATASOURCE_USERNAME=admin -e SPRING_DATASOURCE_PASSWORD=admin123 ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
 
